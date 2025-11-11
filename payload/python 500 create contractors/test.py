@@ -2,12 +2,11 @@ import requests
 import random
 import time
 
-
 # === CONFIGURATION ===
 API_URL = "https://api.jobtrekpro.com/api/contractors"
 # Use an environment variable or a config file for security
-ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhYzI0YmEzZi1jZTk0LTRmZjYtOGI2NS0xZmRjYWYwNmJjZmUiLCJlbWFpbCI6IjRub3ZAeW9wbWFpbC5jb20iLCJyb2xlIjoib3duZXIiLCJpYXQiOjE3NjI4NzY4ODYsImV4cCI6MTc2Mjk2MzI4Nn0.MpXhef6B3ciZDPgBPOCTi5L4ph3WqeabvHn6FA3ZITM"
-BASE_EMAIL = "wosh@yopmail.com"
+ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkY2YwZGUxNS1lNDk4LTRjMzQtOGQ5OC04N2UwOTIwNTcyNTEiLCJlbWFpbCI6IjEybm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYyODgxMzEyLCJleHAiOjE3NjI5Njc3MTJ9.Er2gF1swESD5TeTNBegyEp-C7QdU6EGz2DMlIsQQp54"
+BASE_EMAIL = "test@yopmail.com"
 
 headers = {
     "Authorization": f"Bearer {ADMIN_TOKEN}",
@@ -19,6 +18,9 @@ first_names = ["john", "Alex", "Jordan",
 last_names = ["Barber", "carlson", "Johnson",
               "Lee", "charles", "Clark", "Adams"]
 
+# List of specializations
+specializations = ["electrical", "handyman", "garage", "plumbing", "others"]
+
 
 def generate_contractor(i):
     first = random.choice(first_names)
@@ -28,6 +30,9 @@ def generate_contractor(i):
     base_name = BASE_EMAIL.split("@")[0]
     domain = BASE_EMAIL.split("@")[1]
     email = f"{base_name}+{i}@{domain}"
+
+    # Select a random specialization
+    specialization = random.choice(specializations)
 
     # Payload for contractor creation
     payload = {
@@ -40,7 +45,7 @@ def generate_contractor(i):
         "hourlyRate": 55,
         "serviceRadius": 25,
         "skillLevel": "beginner",
-        # Using the specialization variable
+        # Using the random specialization
         "specialization": [specialization],
         "status": "pending",
         "tags": [{"name": "maintenance", "color": "#0055ff"}],
