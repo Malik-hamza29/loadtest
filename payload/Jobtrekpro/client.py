@@ -5,7 +5,7 @@ import time
 # ← replace with your API endpoint for clients
 API_URL = "https://api.jobtrekpro.com/api/clients"
 ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDkxOWZmOS0yNTQ0LTQ4NGMtOWFmOS04NTg5MzM2ZjIwNzgiLCJlbWFpbCI6IjEzbm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYyOTUyNzIwLCJleHAiOjE3NjMwMzkxMjB9.9qAaSUHcgCOwn7By0osujfweRMp0kAk3dEpOYxkZUhQ"  # ← replace with your real admin token
-BASE_EMAIL = "example@yopmail.com"  # Yopmail for temporary clients
+BASE_EMAIL = "clients@yopmail.com"  # Yopmail for temporary clients
 headers = {
     "Authorization": f"Bearer {ADMIN_TOKEN}",
     "Content-Type": "application/json"
@@ -52,7 +52,7 @@ def create_clients(n=500):
                 API_URL, json=payload, headers=headers, timeout=10)
             if response.status_code in [200, 201]:
                 success += 1
-                print(f"[{i}] :white_tick: Created client: {payload['email']}")
+                print(f"[{i}]: Created client: {payload['email']}")
             else:
                 fail += 1
                 print(f"[{i}] :x: Failed ({response.status_code}): {response.text}")
@@ -65,4 +65,4 @@ def create_clients(n=500):
 
 
 if __name__ == "__main__":
-    create_clients(500)  # Create 500 clients
+    create_clients(10)  # Create 500 clients
