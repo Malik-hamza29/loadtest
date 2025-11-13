@@ -5,12 +5,12 @@ import time
 # === CONFIGURATION ===
 # ← replace with your API endpoint
 API_URL = "https://api.jobtrekpro.com/api/contractors"
-ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDkxOWZmOS0yNTQ0LTQ4NGMtOWFmOS04NTg5MzM2ZjIwNzgiLCJlbWFpbCI6IjEzbm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYyOTUxNDc0LCJleHAiOjE3NjMwMzc4NzR9.OP2UCBL4xAMgob0kX3gcW0iXH3Zi0JwMP4JPHeUwEEg"              # ← replace with your real admin token
+ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmMyZjA2Ny03OGJhLTQ1NmQtODU2Yy1mMmMzNzc4YmNjNWUiLCJlbWFpbCI6InRlc3RAeW9wbWFpbC5jb20iLCJyb2xlIjoib3duZXIiLCJpYXQiOjE3NjMwMjgzOTUsImV4cCI6MTc2MzExNDc5NX0.d2XV4_cav7dJY3qVK2pV5G9xbmHGZJOxgRbiJMkqZg4"              # ← replace with your real admin token
 # ← base inbox (check on yopmail.com/?testuser)
-BASE_EMAIL = "tags@yopmail.com"
+BASE_EMAIL = "con@yopmail.com"
 
 headers = {
-    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzMDkxOWZmOS0yNTQ0LTQ4NGMtOWFmOS04NTg5MzM2ZjIwNzgiLCJlbWFpbCI6IjEzbm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYyOTUxNDc0LCJleHAiOjE3NjMwMzc4NzR9.OP2UCBL4xAMgob0kX3gcW0iXH3Zi0JwMP4JPHeUwEEg",
+    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmMyZjA2Ny03OGJhLTQ1NmQtODU2Yy1mMmMzNzc4YmNjNWUiLCJlbWFpbCI6InRlc3RAeW9wbWFpbC5jb20iLCJyb2xlIjoib3duZXIiLCJpYXQiOjE3NjMwMjgzOTUsImV4cCI6MTc2MzExNDc5NX0.d2XV4_cav7dJY3qVK2pV5G9xbmHGZJOxgRbiJMkqZg4",
     "Content-Type": "application/json"
 }
 
@@ -96,4 +96,4 @@ def create_contractors(n=500):
 
 
 if __name__ == "__main__":
-    create_contractors(16)
+    create_contractors(5)
