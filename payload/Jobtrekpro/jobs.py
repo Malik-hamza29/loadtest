@@ -11,18 +11,11 @@ from typing import List, Optional
 from enum import Enum
 
 
-# Job tags with names and colors
-TAGS_LIST = [
-    {"name": "urgent", "color": "#ff0000"},
-    {"name": "vip", "color": "#cc00ff"},
-    {"name": "priority", "color": "#ff6600"},
-    {"name": "new", "color": "#00cc00"},
-    {"name": "active", "color": "#0055ff"},
-    {"name": "pending", "color": "#ffaa00"},
-    {"name": "follow-up", "color": "#00cccc"},
-    {"name": "hot-lead", "color": "#ff0066"},
-    {"name": "qualified", "color": "#0099ff"},
-    {"name": "prospect", "color": "#9900ff"}
+# Job tag colors (hex codes)
+TAG_COLORS = [
+    "#0055ff", "#ff0000", "#00cc00", "#ffaa00",
+    "#cc00ff", "#00cccc", "#ff6600", "#0099ff",
+    "#ff0066", "#9900ff", "#00ff99", "#ff9900"
 ]
 
 
@@ -89,10 +82,10 @@ class JobPayload:
     requested_service: str
     total_price: int
     services: List[Service]
-    job_tag: Optional[dict] = None
+    job_tag: Optional[str] = None
 
     def to_dict(self) -> dict:
-        tag = self.job_tag or random.choice(TAGS_LIST)
+        tag = self.job_tag or random.choice(TAG_COLORS)
 
         return {
             "clientId": self.client_id,
@@ -103,7 +96,7 @@ class JobPayload:
             "durationHours": self.duration_hours,
             "jobDate": self.job_date,
             "jobTime": self.job_time,
-            "jobTag": tag["name"],
+            "jobTag": tag,
             "locationAddress": self.location_address,
             "requestedService": self.requested_service,
             "totalPrice": self.total_price,
@@ -175,9 +168,9 @@ class JobCreator:
 
             if response.status_code in [200, 201]:
                 self.stats["success"] += 1
-                tag_info = payload.to_dict()['selectedTags'][0]
+                tag_color = payload.to_dict()['jobTag']
                 print(
-                    f"[{job_number}] ✅ Created job: '{payload.title}' (tag: {tag_info['name']} {tag_info['color']})")
+                    f"[{job_number}] ✅ Created job: '{payload.title}' (tag: {tag_color})")
                 return True
             else:
                 self.stats["failed"] += 1
