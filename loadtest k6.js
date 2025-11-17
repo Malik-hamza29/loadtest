@@ -41,7 +41,8 @@ export default function (data) {
     const contractorRes = http.get('https://api.jobtrekpro.com/api/contractors', { headers });
     check(contractorRes, { 'contractors api status 200': (r) => r.status === 200 });
 
-
+    const chatRes = http.get('https://api.jobtrekpro.com/api/chats', { headers });
+    check(chatRes, { 'chats api status 200': (r) => r.status === 200 });
 
 
 
