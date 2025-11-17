@@ -5,7 +5,7 @@ import time
 # ← replace with your API endpoint for clients
 API_URL = "https://api.jobtrekpro.com/api/clients"
 ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkMzZhN2UyZi01OTg1LTQ5YTYtYTg0Ny01YzdhMjQ3MTk3MzkiLCJlbWFpbCI6IjE3bm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYzMzU5ODE5LCJleHAiOjE3NjM0NDYyMTl9.PouXhCU6pqkcSHzlgplrkyONGO68-LVoIXQxwchxIns"  # ← replace with your real admin token
-BASE_EMAIL = "client@yopmail.com"  # Yopmail for temporary clients
+BASE_EMAIL = "client1@yopmail.com"  # Yopmail for temporary clients
 headers = {
     "Authorization": f"Bearer {ADMIN_TOKEN}",
     "Content-Type": "application/json"
@@ -65,4 +65,4 @@ def create_clients(n=500):
 
 
 if __name__ == "__main__":
-    create_clients(500)  # Create 500 clients
+    create_clients(50)  # Create 500 clients
