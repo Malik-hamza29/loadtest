@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 # === CONFIGURATION ===
 API_URL = "https://api.jobtrekpro.com/api/contractors"
 ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkMzZhN2UyZi01OTg1LTQ5YTYtYTg0Ny01YzdhMjQ3MTk3MzkiLCJlbWFpbCI6IjE3bm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYzMzU5ODE5LCJleHAiOjE3NjM0NDYyMTl9.PouXhCU6pqkcSHzlgplrkyONGO68-LVoIXQxwchxIns"
-BASE_EMAIL = "@yopmail.com"
+BASE_EMAIL = "jest@yopmail.com"
 
 # Request headers
 headers = {
@@ -54,7 +54,8 @@ SPECIALIZATIONS = [
 SKILL_LEVELS = ["beginner", "intermediate", "advanced", "expert"]
 
 # Vehicle types
-VEHICLE_TYPES = ["car", "truck", "van", "suv", None]
+# Removed None - will handle separately
+VEHICLE_TYPES = ["car", "truck", "van", "suv"]
 
 # Home base addresses
 ADDRESSES = [
@@ -103,6 +104,9 @@ def generate_contractor(i):
     has_vehicle = random.choice([True, False])
     owns_tools = random.choice([True, False])
 
+    # If has vehicle, always select a vehicle type (not None)
+    vehicle_type = random.choice(VEHICLE_TYPES) if has_vehicle else None
+
     # Create the contractor payload
     payload = {
         "firstName": first,
@@ -117,7 +121,8 @@ def generate_contractor(i):
         "skillLevel": skill_level,  # Using the randomly selected skill level
         "specializations": specializations,
         "hasVehicle": has_vehicle,
-        "vehicleType": random.choice(VEHICLE_TYPES) if has_vehicle else None,
+        # Will be a valid type if hasVehicle=True, None otherwise
+        "vehicleType": vehicle_type,
         "ownsTools": owns_tools,
         "tags": tags,
         "serviceAreas": [],
@@ -171,8 +176,8 @@ def create_contractors(n=10):
 
 
 if __name__ == "__main__":
-    # Create 10 contractors for testing
-    create_contractors(20)
+    # Create 20 contractors for testing
+    create_contractors(10)
 
     # For larger batches:
     # create_contractors(50)
