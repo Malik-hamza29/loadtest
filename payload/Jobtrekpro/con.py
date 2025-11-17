@@ -1,233 +1,176 @@
-"""
-Job Creation Script - Refactored
-Creates multiple jobs via JobTrekPro API with configurable parameters.
-"""
 import requests
 import random
 import time
-import uuid
-from dataclasses import dataclass
-from typing import List, Optional
-from enum import Enum
+from datetime import datetime, timedelta
 
+# === CONFIGURATION ===
+API_URL = "https://api.jobtrekpro.com/api/contractors"
+ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkMzZhN2UyZi01OTg1LTQ5YTYtYTg0Ny01YzdhMjQ3MTk3MzkiLCJlbWFpbCI6IjE3bm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYzMzU5ODE5LCJleHAiOjE3NjM0NDYyMTl9.PouXhCU6pqkcSHzlgplrkyONGO68-LVoIXQxwchxIns"
+BASE_EMAIL = "a@yopmail.com"
 
-# Job tags with names and colors
-TAGS_LIST = [
-    {"name": "urgent", "color": "#ff0000"},
-    {"name": "vip", "color": "#cc00ff"},
-    {"name": "priority", "color": "#ff6600"},
-    {"name": "new", "color": "#00cc00"},
-    {"name": "active", "color": "#0055ff"},
-    {"name": "pending", "color": "#ffaa00"},
-    {"name": "follow-up", "color": "#00cccc"},
-    {"name": "hot-lead", "color": "#ff0066"},
-    {"name": "qualified", "color": "#0099ff"},
-    {"name": "prospect", "color": "#9900ff"}
+# Request headers
+headers = {
+    "Authorization": f"Bearer {ADMIN_TOKEN}",
+    "Content-Type": "application/json"
+}
+
+# Random data pools
+first_names = [
+    'John', 'Michael', 'David', 'James', 'Robert', 'William',
+    'Sarah', 'Jennifer', 'Lisa', 'Mary', 'Patricia', 'Linda',
+    'Ahmed', 'Ali', 'Hassan', 'Fatima', 'Aisha', 'Zainab',
+    'Chris', 'Daniel', 'Matthew', 'Emma', 'Olivia', 'Sophia',
+    'Illana', 'Carlos', 'Marcus', 'Elena', 'Diego', 'Isabella'
+]
+
+last_names = [
+    'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia',
+    'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez',
+    'Khan', 'Ahmed', 'Ali', 'Hassan', 'Malik', 'Shah',
+    'Wilson', 'Moore', 'Taylor', 'Anderson', 'Thomas', 'Jackson',
+    'Dickson', 'Cooper', 'Bennett', 'Foster', 'Coleman'
+]
+
+# Tag options
+TAG_NAMES = [
+    "urgent", "vip", "priority", "certified", "active",
+    "verified", "expert", "reliable", "preferred", "new-hire"
+]
+
+TAG_COLORS = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+    '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B195', '#C06C84',
+    '#6C5B7B', '#355C7D', '#F67280', '#C8E6C9', '#FFCCBC',
+    '#0055ff', '#ff5500', '#00ff55', '#5500ff', '#ff0055'
+]
+
+# Specializations
+SPECIALIZATIONS = [
+    "electrical", "plumbing", "hvac", "carpentry", "painting",
+    "roofing", "flooring", "landscaping", "garage"
+]
+
+# Skill levels
+SKILL_LEVELS = ["beginner", "intermediate", "advanced", "expert"]
+
+# Vehicle types
+VEHICLE_TYPES = ["Car", "Truck", "Van", "SUV", None]
+
+# Home base addresses
+ADDRESSES = [
+    "123 Main Street",
+    "456 Oak Avenue",
+    "789 Elm Boulevard",
+    "321 Pine Road",
+    "654 Maple Drive",
+    "987 Cedar Lane",
+    "147 Birch Street",
+    "258 Willow Way",
+    "369 Aspen Court",
+    "741 Spruce Avenue"
 ]
 
 
-# Random name lists
-FIRST_NAMES = [
-    "John", "Sarah", "Michael", "Emma", "David", "Lisa", "James", "Maria",
-    "Robert", "Jennifer", "William", "Linda", "Richard", "Patricia", "Joseph",
-    "Elizabeth", "Thomas", "Susan", "Christopher", "Jessica", "Daniel", "Karen",
-    "Matthew", "Nancy", "Anthony", "Betty", "Mark", "Helen", "Donald", "Sandra"
-]
-
-LAST_NAMES = [
-    "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis",
-    "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson",
-    "Thomas", "Taylor", "Moore", "Jackson", "Martin", "Lee", "Thompson", "White",
-    "Harris", "Clark", "Lewis", "Robinson", "Walker", "Young", "Hall"
-]
+def generate_random_dob():
+    """Generate random date of birth (age between 21-65)"""
+    today = datetime.now()
+    years_ago = random.randint(21, 65)
+    dob = today - timedelta(days=years_ago * 365 + random.randint(0, 364))
+    return dob.strftime("%Y-%m-%d")
 
 
-@dataclass
-class JobConfig:
-    """Configuration for job creation"""
-    api_url: str = "https://api.jobtrekpro.com/api/jobs"
-    admin_token: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmMyZjA2Ny03OGJhLTQ1NmQtODU2Yy1mMmMzNzc4YmNjNWUiLCJlbWFpbCI6InRlc3RAeW9wbWFpbC5jb20iLCJyb2xlIjoib3duZXIiLCJpYXQiOjE3NjMwMjkwMDQsImV4cCI6MTc2MzExNTQwNH0.ohdkrHCQS8WDSFYCkrIW7vlCFdVwZ4lttUXgf61jM8A"
-    client_id: str = "d16fe772-a0de-42bc-9689-793d00c54f8e"
-    contractor_id: str = "64ea2b3b-7d99-4756-99fe-4d1ee9c68353"
-    rate_limit_delay: float = 0.1
-    request_timeout: int = 10
+def generate_contractor(i):
+    """Generates a contractor payload with random data"""
+    first = random.choice(first_names)
+    last = random.choice(last_names)
+
+    # Generate unique email using Yopmail alias
+    base_name = BASE_EMAIL.split("@")[0]
+    domain = BASE_EMAIL.split("@")[1]
+    email = f"{base_name}+{i}@{domain}"
+
+    # SELECT ONLY ONE TAG
+    selected_tag_name = random.choice(TAG_NAMES)
+    tags = [{"name": selected_tag_name, "color": random.choice(TAG_COLORS)}]
+
+    # SELECT ONLY ONE SPECIALIZATION
+    specializations = [random.choice(SPECIALIZATIONS)]
+
+    # Random boolean values
+    has_vehicle = random.choice([True, False])
+    owns_tools = random.choice([True, False])
+
+    # Create the contractor payload
+    payload = {
+        "firstName": first,
+        "lastName": last,
+        "email": email,
+        "phone": f"+1 ({random.randint(100, 999)}) {random.randint(1000000, 9999999)}",
+        "dateOfBirth": generate_random_dob(),
+        "homeBaseAddress": random.choice(ADDRESSES),
+        "serviceRadius": random.choice([10, 15, 25, 30, 50]),
+        "hourlyRate": random.randint(20, 100),
+        "yearsExperience": random.randint(1, 40),
+        "skillLevel": random.choice(SKILL_LEVELS),
+        "specializations": specializations,
+        "hasVehicle": has_vehicle,
+        "vehicleType": random.choice(VEHICLE_TYPES) if has_vehicle else None,
+        "ownsTools": owns_tools,
+        "tags": tags,
+        "serviceAreas": [],
+        "licenseNumber": None,
+        "licenseState": None,
+        "insuranceProvider": None,
+        "emergencyContactName": None,
+        "emergencyContactPhone": None
+    }
+
+    return payload
 
 
-@dataclass
-class Service:
-    """Service details"""
-    name: str
-    description: str
-    duration: int
-    base_price: int
-    total_price: int
+def create_contractors(n=10):
+    """Creates n contractors and sends the data to the API"""
+    success, fail = 0, 0
 
-    def to_dict(self) -> dict:
-        return {
-            "name": self.name,
-            "description": self.description,
-            "duration": self.duration,
-            "basePrice": self.base_price,
-            "totalPrice": self.total_price,
-            "serviceId": str(uuid.uuid4())
-        }
+    print(f"\n🚀 Creating {n} contractors...")
+    print("=" * 80)
 
-
-@dataclass
-class JobPayload:
-    """Job creation payload"""
-    client_id: str
-    contractor_id: str
-    client_first_name: str
-    client_last_name: str
-    title: str
-    description: str
-    duration_hours: int
-    job_date: str
-    job_time: str
-    location_address: str
-    requested_service: str
-    total_price: int
-    services: List[Service]
-    job_tag: Optional[dict] = None
-
-    def to_dict(self) -> dict:
-        tag = self.job_tag or random.choice(TAGS_LIST)
-
-        return {
-            "clientId": self.client_id,
-            "clientFirstName": self.client_first_name,
-            "clientLastName": self.client_last_name,
-            "title": self.title,
-            "description": self.description,
-            "durationHours": self.duration_hours,
-            "jobDate": self.job_date,
-            "jobTime": self.job_time,
-            "jobTag": tag["name"],
-            "locationAddress": self.location_address,
-            "requestedService": self.requested_service,
-            "totalPrice": self.total_price,
-            "selectedTags": [tag],
-            "candidateContractorIds": [self.contractor_id],
-            "priorityContractorIds": [self.contractor_id],
-            "services": [s.to_dict() for s in self.services]
-        }
-
-
-class JobCreator:
-    """Handles job creation via API"""
-
-    def __init__(self, config: JobConfig):
-        self.config = config
-        self.headers = {
-            "Authorization": f"Bearer {config.admin_token}",
-            "Content-Type": "application/json"
-        }
-        self.stats = {"success": 0, "failed": 0}
-
-    def create_default_job_payload(self) -> JobPayload:
-        """Creates a default job payload with cleaning service and random client name"""
-        first_name = random.choice(FIRST_NAMES)
-        last_name = random.choice(LAST_NAMES)
-
-        cleaning_service = Service(
-            name="cleaning",
-            description=f"Clean the property for {first_name} {last_name}",
-            duration=random.randint(1, 4),
-            base_price=random.randint(50, 150),
-            total_price=random.randint(100, 300)
-        )
-
-        return JobPayload(
-            client_id=self.config.client_id,
-            contractor_id=self.config.contractor_id,
-            client_first_name=first_name,
-            client_last_name=last_name,
-            title=f"Cleaning job for {first_name} {last_name}",
-            description=f"Professional cleaning service requested by {first_name} {last_name}",
-            duration_hours=cleaning_service.duration,
-            job_date="2025-11-15",
-            job_time=f"{random.randint(8, 16):02d}:00",
-            location_address=f"{random.randint(100, 9999)} {random.choice(['Main', 'Oak', 'Maple', 'Cedar', 'Pine'])} Street",
-            requested_service="cleaning",
-            total_price=cleaning_service.total_price,
-            services=[cleaning_service]
-        )
-
-    def create_job(self, payload: JobPayload, job_number: int) -> bool:
-        """
-        Creates a single job via API
-
-        Args:
-            payload: Job payload to send
-            job_number: Job number for logging
-
-        Returns:
-            True if successful, False otherwise
-        """
+    for i in range(1, n + 1):
+        payload = generate_contractor(i)
         try:
+            # Send the POST request to create a contractor
             response = requests.post(
-                self.config.api_url,
-                json=payload.to_dict(),
-                headers=self.headers,
-                timeout=self.config.request_timeout
-            )
+                API_URL, json=payload, headers=headers, timeout=10)
 
             if response.status_code in [200, 201]:
-                self.stats["success"] += 1
-                tag_info = payload.to_dict()['selectedTags'][0]
+                success += 1
+                tag_name = payload['tags'][0]['name']
+                spec_name = payload['specializations'][0]
                 print(
-                    f"[{job_number}] ✅ Created job: '{payload.title}' (tag: {tag_info['name']} {tag_info['color']})")
-                return True
+                    f"[{i}] ✅ {payload['firstName']} {payload['lastName']} | {payload['email']}")
+                print(
+                    f"     📋 {payload['skillLevel']} | {payload['yearsExperience']}yrs | ${payload['hourlyRate']}/hr")
+                print(f"     🏷️  Tag: {tag_name} | Spec: {spec_name}")
             else:
-                self.stats["failed"] += 1
-                print(
-                    f"[{job_number}] ❌ Failed ({response.status_code}): {response.text}")
-                return False
-
-        except requests.exceptions.RequestException as e:
-            self.stats["failed"] += 1
-            print(f"[{job_number}] ⚠️ Request error: {e}")
-            return False
+                fail += 1
+                print(f"[{i}] ❌ Failed ({response.status_code}): {response.text}")
         except Exception as e:
-            self.stats["failed"] += 1
-            print(f"[{job_number}] ⚠️ Unexpected error: {e}")
-            return False
+            fail += 1
+            print(f"[{i}] ⚠️ Exception: {e}")
 
-    def create_multiple_jobs(self, count: int, payload_generator=None) -> dict:
-        """
-        Creates multiple jobs
+        # Small delay to avoid rate limits
+        time.sleep(0.1)
 
-        Args:
-            count: Number of jobs to create
-            payload_generator: Optional function that returns JobPayload
-
-        Returns:
-            Dictionary with success and failed counts
-        """
-        self.stats = {"success": 0, "failed": 0}
-
-        for i in range(1, count + 1):
-            payload = payload_generator(
-                i) if payload_generator else self.create_default_job_payload()
-            self.create_job(payload, i)
-
-            if i < count:  # Don't delay after last job
-                time.sleep(self.config.rate_limit_delay)
-
-        print(
-            f"\n✅ Success: {self.stats['success']} | ❌ Failed: {self.stats['failed']}")
-        return self.stats
-
-
-def main():
-    """Main entry point"""
-    config = JobConfig()
-    creator = JobCreator(config)
-
-    # Create 5 jobs with default payload
-    creator.create_multiple_jobs(5)
+    print("=" * 80)
+    print(f"\n✨ Completed! ✅ Success: {success} | ❌ Failed: {fail}")
+    print(
+        f"📬 All emails accessible at: https://yopmail.com/{BASE_EMAIL.split('@')[0]}")
 
 
 if __name__ == "__main__":
-    main()
+    # Create 10 contractors for testing
+    create_contractors(10)
+
+    # For larger batches:
+    # create_contractors(50)
+    # create_contractors(100)
