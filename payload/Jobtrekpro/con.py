@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 # === CONFIGURATION ===
 API_URL = "https://api.jobtrekpro.com/api/contractors"
 ADMIN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJkMzZhN2UyZi01OTg1LTQ5YTYtYTg0Ny01YzdhMjQ3MTk3MzkiLCJlbWFpbCI6IjE3bm92QHlvcG1haWwuY29tIiwicm9sZSI6Im93bmVyIiwiaWF0IjoxNzYzMzU5ODE5LCJleHAiOjE3NjM0NDYyMTl9.PouXhCU6pqkcSHzlgplrkyONGO68-LVoIXQxwchxIns"
-BASE_EMAIL = "a@yopmail.com"
+BASE_EMAIL = "s@yopmail.com"
 
 # Request headers
 headers = {
@@ -50,11 +50,11 @@ SPECIALIZATIONS = [
     "roofing", "cleaning", "landscaping"
 ]
 
-# Skill levels
+# Skill levels - THIS WILL BE RANDOMLY SELECTED EACH TIME
 SKILL_LEVELS = ["beginner", "intermediate", "advanced", "expert"]
 
 # Vehicle types
-VEHICLE_TYPES = ["Car", "Truck", "Van", "SUV", None]
+VEHICLE_TYPES = ["car", "truck", "van", "suv", None]
 
 # Home base addresses
 ADDRESSES = [
@@ -89,12 +89,15 @@ def generate_contractor(i):
     domain = BASE_EMAIL.split("@")[1]
     email = f"{base_name}+{i}@{domain}"
 
-    # SELECT ONLY ONE TAG
+    # SELECT ONLY ONE TAG (randomly each time)
     selected_tag_name = random.choice(TAG_NAMES)
     tags = [{"name": selected_tag_name, "color": random.choice(TAG_COLORS)}]
 
-    # SELECT ONLY ONE SPECIALIZATION
+    # SELECT ONLY ONE SPECIALIZATION (randomly each time)
     specializations = [random.choice(SPECIALIZATIONS)]
+
+    # RANDOMLY SELECT SKILL LEVEL (this happens fresh for each contractor)
+    skill_level = random.choice(SKILL_LEVELS)
 
     # Random boolean values
     has_vehicle = random.choice([True, False])
@@ -111,7 +114,7 @@ def generate_contractor(i):
         "serviceRadius": random.choice([10, 15, 25, 30, 50]),
         "hourlyRate": random.randint(20, 100),
         "yearsExperience": random.randint(1, 40),
-        "skillLevel": random.choice(SKILL_LEVELS),
+        "skillLevel": skill_level,  # Using the randomly selected skill level
         "specializations": specializations,
         "hasVehicle": has_vehicle,
         "vehicleType": random.choice(VEHICLE_TYPES) if has_vehicle else None,
@@ -169,7 +172,7 @@ def create_contractors(n=10):
 
 if __name__ == "__main__":
     # Create 10 contractors for testing
-    create_contractors(10)
+    create_contractors(4)
 
     # For larger batches:
     # create_contractors(50)
