@@ -65,4 +65,4 @@ def create_clients(n=500):
 
 
 if __name__ == "__main__":
-    create_clients(10)  # Create 500 clients
+    create_clients(20)  # Create 500 clients
