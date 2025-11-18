@@ -39,9 +39,9 @@ LAST_NAMES = [
 class JobConfig:
     """Configuration for job creation"""
     api_url: str = "https://api.jobtrekpro.com/api/jobs"
-    admin_token: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIyMmMyZjA2Ny03OGJhLTQ1NmQtODU2Yy1mMmMzNzc4YmNjNWUiLCJlbWFpbCI6InRlc3RAeW9wbWFpbC5jb20iLCJyb2xlIjoib3duZXIiLCJpYXQiOjE3NjMwMjkwMDQsImV4cCI6MTc2MzExNTQwNH0.ohdkrHCQS8WDSFYCkrIW7vlCFdVwZ4lttUXgf61jM8A"
-    client_id: str = "d16fe772-a0de-42bc-9689-793d00c54f8e"
-    contractor_id: str = "64ea2b3b-7d99-4756-99fe-4d1ee9c68353"
+    admin_token: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjNDFlMzg5NC0zNDUxLTRlNzEtODgyMS02MDk2NDczYjAzNmIiLCJlbWFpbCI6Im1hbnVhbHRlc3RpbmdAeW9wbWFpbC5jb20iLCJyb2xlIjoib3duZXIiLCJpYXQiOjE3NjM0NTk1OTYsImV4cCI6MTc2MzU0NTk5Nn0.2eeoVXOR7XfPxMX0uyu8i7vjLpnf98OLPcZyWxlF-tk"
+    client_id: str = "963a6018-f59e-4aea-a5b1-3bfd048ab70e"
+    contractor_id: str = "16b284ac-0ff1-4bb6-8548-61b873adb1cd"
     rate_limit_delay: float = 0.1
     request_timeout: int = 10
 
@@ -219,7 +219,7 @@ def main():
     creator = JobCreator(config)
 
     # Create 5 jobs with default payload
-    creator.create_multiple_jobs(20)
+    creator.create_multiple_jobs(10)
 
 
 if __name__ == "__main__":
