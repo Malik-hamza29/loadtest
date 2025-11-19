@@ -177,7 +177,7 @@ def create_contractors(n=10):
 
 if __name__ == "__main__":
     # Create 20 contractors for testing
-    create_contractors(10)
+    create_contractors(400)
 
     # For larger batches:
     # create_contractors(50)
