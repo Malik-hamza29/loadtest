@@ -37,7 +37,7 @@ with open('contractors.csv', mode='w', newline='') as file:
         "tags", "status"
     ])
 
-    for i in range(1, 501):
+    for i in range(1, 601):
         first_name = f"Contractor{i}"
         last_name = f"Test{i}"
         email = f"contractor{i}@yopmail.com"  # Unique email
